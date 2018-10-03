@@ -141,7 +141,7 @@ public class Particle {
 		
 		this.forces = new ArrayList<Force>(0);
 		
-		this.gravitationalParameter = (GravitationalForce.GRAVITATIONAL_CONSTANT * this.m.getMagnitude()) / 1.0e9;
+		this.gravitationalParameter = (GravitationalForce.GRAVITATIONAL_CONSTANT * this.m.getMagnitude());
 	
 		this.radiusParticle = radiusParticle;
 		

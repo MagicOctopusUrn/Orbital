@@ -24,4 +24,12 @@ public class Mass {
 	public double getMagnitude() {
 		return magnitude;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Mass [magnitude=" + magnitude + "]";
+	}
 }
