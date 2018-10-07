@@ -21,7 +21,7 @@ public class Orbit {
 		Mass defaultMass2 = new Mass("m2", 1000);
 		
 		Particle body = new Particle("Earth", defaultMass, CartesianVector.NULL_VECTOR, 
-				CartesianVector.NULL_VECTOR, CartesianVector.NULL_VECTOR, 6378);
+				CartesianVector.NULL_VECTOR, CartesianVector.NULL_VECTOR, 6378, 1e9);
 		
 		Particle satelliteNull = new Particle("Satellite", defaultMass2, CartesianVector.NULL_VECTOR, 
 				CartesianVector.NULL_VECTOR, CartesianVector.NULL_VECTOR);
@@ -35,6 +35,11 @@ public class Orbit {
 		
 		Orbit o = new Orbit(body, satelliteNull, angularMomentum, eccentricity, 
 				rightAscension, inclination, perigeeArgument, trueAnomaly);
+		
+		System.out.println("TEST ORBIT WHAT THE FUCK:\t" + o);
+		
+		Orbit test = new Orbit(body, satelliteNull, 400, 4000);
+		System.out.println(test);
 		
 		/*
 		CartesianVector r2 = new CartesianVector("R_2", 1600, 5310, 3800);
@@ -80,6 +85,59 @@ public class Orbit {
 	protected final Particle satellite;
 	
 	public Orbit(Particle bodyNull, Particle satelliteNull, 
+			double perigee, double apogee) {
+		//this(bodyNull, satelliteNull, calculateAngularMomentum(bodyNull, perigee, apogee), 
+				//calculateEccentricity(bodyNull, perigee, apogee), 0.0, 0.0, 0.0, 0.0);
+		this.body = bodyNull;
+		
+		double hp = calculateAngularMomentumAtPerigee(bodyNull, perigee, apogee);
+		
+		double perigeePrime = bodyNull.getRadiusParticle() + perigee;
+		
+		double rx = perigeePrime;
+		double ry = 0.0;
+		double rz = 0.0;
+
+		CartesianVector satelliteVectorRNull = new CartesianVector("R_null", rx, ry, rz);
+		
+		Particle satellite = new Particle("Satellite", satelliteNull.getMass(), 
+				satelliteVectorRNull, CartesianVector.NULL_VECTOR, CartesianVector.NULL_VECTOR);
+		
+		GravitationalForce force = new GravitationalForce(this.body, satellite);
+		
+		double vx = 0.0;
+		double vy = hp / perigeePrime;
+		double vz = 0.0;
+		
+		CartesianVector satelliteVectorVNull = new CartesianVector("V_null", vx, vy, vz);
+		
+		satellite = new Particle("Satellite", satelliteNull.getMass(), 
+				satelliteVectorRNull, satelliteVectorVNull, CartesianVector.NULL_VECTOR);
+		
+		this.satellite = satellite;
+		
+		this.satellite.addForce(force);
+	}
+	
+	private final static double calculateEccentricity(Particle body, double perigee, double apogee) {
+		double apogeePrime = body.radiusParticle + apogee;
+		double perigeePrime = body.radiusParticle + perigee;
+		
+		return (apogeePrime - perigeePrime) / (apogeePrime + perigeePrime);
+	}
+	
+	private final static double calculateAngularMomentumAtPerigee(Particle body, double perigee, double apogee) {
+		double e = calculateEccentricity(body, perigee, apogee);
+		double g = body.gravitationalParameter;
+		double perigeePrime = body.radiusParticle + perigee;
+		if (0 < e && e < 1){
+			return Math.sqrt(perigeePrime * (1 + e) * g);
+		} else {
+			return -1;
+		}
+	}
+	
+	public Orbit(Particle bodyNull, Particle satelliteNull, 
 			double angularMomentum, double eccentricity,
 			double rightAscension, double inclination, 
 			double perigeeArgument, double trueAnomaly) {		
@@ -87,7 +145,7 @@ public class Orbit {
 		
 		CartesianTransform transform = new CartesianTransform(perigeeArgument, rightAscension, inclination);
 		
-		double scalarR = (Math.pow(angularMomentum, 2.0) / (body.gravitationalParameter / 1e9)) /
+		double scalarR = (Math.pow(angularMomentum, 2.0) / (body.gravitationalParameter)) /
 				 (1.0 + (eccentricity * Math.cos(trueAnomaly * DEGREES_TO_RADIANS)));
 		
 		System.out.println(scalarR);
@@ -98,7 +156,7 @@ public class Orbit {
 		
 		CartesianVector satelliteVectorRNull = new CartesianVector("R_null", rx, ry, rz);
 		
-		double scalarV = ((body.gravitationalParameter / 1e9) / angularMomentum);
+		double scalarV = ((body.gravitationalParameter) / angularMomentum);
 		
 		System.out.println(satelliteVectorRNull.toString());
 		
@@ -275,6 +333,14 @@ public class Orbit {
 		return Math.pow(h, 2.0) / u * (1 / (1 + e * Math.cos(Math.PI)));
 	}
 	
+	public double calculatePerigeeFromSurface() {
+		return this.calculatePerigee() - this.body.radiusParticle;
+	}
+	
+	public double calculateApogeeFromSurface() {
+		return this.calculateApogee() - this.body.radiusParticle;
+	}
+	
 	public double calculateSemimajorAxis() {
 		return 0.5 * (this.calculatePerigee() + this.calculateApogee());
 	}
@@ -305,6 +371,24 @@ public class Orbit {
 	
 	public LagrangianVector calculateLagrangian(double deltaTime) {
 		return new LagrangianVector(this, deltaTime);
+	}
+	
+	public double calculateAngularMomentum() {
+		double rp = this.calculatePerigee();
+		double ra = this.calculateApogee();
+		double u = this.body.gravitationalParameter;
+		return Math.sqrt(2.0 * u) * Math.sqrt((ra * rp) / (ra + rp));
+	}
+	
+	public Orbit scaleOrbit(LagrangianVector vector) {
+		return new Orbit(this.body, this.satellite.scaleLagrangian(vector));
+	}
+	
+	public Orbit scaleOrbitInverse() {
+		return new Orbit(this.body, 
+			this.satellite.scaleLagrangian(
+				this.calculateLagrangian(
+					this.calculatePeriod() / 2.0)));
 	}
 	
 	public double calculateUniversalAnomaly(double deltaTime) {
@@ -342,6 +426,13 @@ public class Orbit {
 		return body.distance(satellite);
 	}
 
+	public double calculateEscapeV() {
+		double angularMomentumPerigee = Math.sqrt(this.calculatePerigee() * 2.0 * body.gravitationalParameter); 
+		double r0 = Math.pow(angularMomentumPerigee, 2.0) 
+				/ (body.gravitationalParameter * (1.0 + Math.cos(0.0)));
+		return Math.sqrt((2.0 * body.gravitationalParameter) / r0);
+	}
+	
 	/**
 	 * @return the body
 	 */
@@ -375,9 +466,7 @@ public class Orbit {
 				+ calculatePerigee() + "\ncalculateApogee()="
 				+ calculateApogee() + "\ncalculateSemimajorAxis()="
 				+ calculateSemimajorAxis() + "\ncalculatePeriod()="
-				+ calculatePeriod() + ""
-						+ "\n" + satellite
-						+ "\n" + body
-						+ "]";
+				+ calculatePeriod()	+ "\ncalculateEscapeV()="
+				+ calculateEscapeV()	+ "]";
 	}
 }

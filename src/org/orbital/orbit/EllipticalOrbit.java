@@ -16,13 +16,13 @@ public class EllipticalOrbit {
 		CartesianVector v1 = new CartesianVector("V_1", 10, 20, 30);
 		CartesianVector a1initial = new CartesianVector("A_1", 0, 0, 0);
 		
-		Particle one = new Particle("Earth", defaultMass, r1, v1, a1initial, 6378);
+		Particle one = new Particle("Earth", defaultMass, r1, v1, a1initial, 6378, 1e9);
 		
 		CartesianVector r2 = new CartesianVector("R_2", 3000, 0, 0);
 		CartesianVector v2 = new CartesianVector("V_2", 10, 20, 30);
 		CartesianVector a2initial = new CartesianVector("A_2", 0, 0, 0);
 		
-		Particle two = new Particle("Satellite", defaultMass2, r2, v2, a2initial, 0.1);
+		Particle two = new Particle("Satellite", defaultMass2, r2, v2, a2initial, 0.1, 1e9);
 		
 		Force gravityOneTwo = new GravitationalForce(one, two);
 		

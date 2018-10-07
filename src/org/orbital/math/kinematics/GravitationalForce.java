@@ -55,7 +55,7 @@ public class GravitationalForce extends Force {
 		//return ra.scale("m_1", aMass).add(rb.scale("m_2", bMass)).scale("(m_1+m_2)^-1", 1.0 / (aMass + bMass));
 	}
 
-	private static double getMagnitude(Particle a, Particle b) {
+	public static double getMagnitude(Particle a, Particle b) {
 		double mass = a.getMass().getMagnitude() * b.getMass().getMagnitude();
 		double distance = a.distance(b);
 		return (GravitationalForce.GRAVITATIONAL_CONSTANT * mass) / distance;

@@ -58,6 +58,8 @@ public class Particle {
 	public final double ascension;
 	
 	public final double declination;
+
+	public final double scale;
 	
 	// Constructor for point masses.
 	public Particle (String label, Mass m, CartesianVector r, 
@@ -107,10 +109,13 @@ public class Particle {
 		} else {
 			this.ascension = 360.0 - Math.acos(rl / Math.cos(Math.asin(rn))) * (180.0 / Math.PI);
 		}
+		
+		this.scale = 1.0;
 	}
 	
 	public Particle (String label, Mass m, CartesianVector r, 
-			CartesianVector v, CartesianVector a, double radiusParticle) {
+			CartesianVector v, CartesianVector a, double radiusParticle, 
+			double scale) {
 		this.label = label;
 		
 		this.r = r;
@@ -141,7 +146,7 @@ public class Particle {
 		
 		this.forces = new ArrayList<Force>(0);
 		
-		this.gravitationalParameter = (GravitationalForce.GRAVITATIONAL_CONSTANT * this.m.getMagnitude());
+		this.gravitationalParameter = (GravitationalForce.GRAVITATIONAL_CONSTANT * this.m.getMagnitude()) / scale;
 	
 		this.radiusParticle = radiusParticle;
 		
@@ -156,6 +161,8 @@ public class Particle {
 		} else {
 			this.ascension = 360.0 - Math.acos(rl / Math.cos(this.declination));
 		}
+		
+		this.scale = scale;
 	}
 
 	/**
@@ -301,6 +308,10 @@ public class Particle {
 		return p;
 	}
 
+	public double getScale() {
+		return this.scale;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -322,6 +333,4 @@ public class Particle {
 				Math.pow(particle.getR().y.getMagnitude() - this.getR().y.getMagnitude(), 2.0) + 
 				Math.pow(particle.getR().z.getMagnitude() - this.getR().z.getMagnitude(), 2.0));
 	}
-	
-	
 }

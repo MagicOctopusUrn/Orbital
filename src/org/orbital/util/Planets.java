@@ -20,9 +20,9 @@ public class Planets {
 	
 	private static final Mass M_EARTH = new Mass("M_Earth", 5.97219e24);
 
-	public static final Particle EARTH_2000 = new Particle("Earth", M_EARTH, R_2000_EARTH, V_2000_EARTH, CartesianVector.NULL_VECTOR, 6378);
+	public static final Particle EARTH_2000 = new Particle("Earth", M_EARTH, R_2000_EARTH, V_2000_EARTH, CartesianVector.NULL_VECTOR, 6378, 1e9);
 
-	public static final Particle EARTH_NULL = new Particle("Earth", M_EARTH, CartesianVector.NULL_VECTOR, CartesianVector.NULL_VECTOR, CartesianVector.NULL_VECTOR, 6378);
+	public static final Particle EARTH_NULL = new Particle("Earth", M_EARTH, CartesianVector.NULL_VECTOR, CartesianVector.NULL_VECTOR, CartesianVector.NULL_VECTOR, 6378, 1e9);
 	
 	/**
 	 * Basic jupiter definition in terms of a 2000 ephemeris state vectors.
