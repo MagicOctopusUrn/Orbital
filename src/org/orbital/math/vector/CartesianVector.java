@@ -3,7 +3,9 @@ package org.orbital.math.vector;
 import java.text.DecimalFormat;
 
 public class CartesianVector extends Vector {
-	private final static double RADIAN_CONVERSION = 180.0 / Math.PI;
+	public final static double RADIAN_CONVERSION = 180.0 / Math.PI;
+	
+	public final static double DEGREE_CONVERSION = Math.PI / 180.0;
 	
 	public static final CartesianVector NULL_VECTOR = new CartesianVector("Unit_Null", 0.0, 0.0, 0.0);
 	
@@ -112,6 +114,14 @@ public class CartesianVector extends Vector {
 		DecimalFormat df = new DecimalFormat("#.#####");
 		return "(" + df.format(x.getMagnitude()) + "," 
 				+ df.format(y.getMagnitude()) + "," 
-				+ df.format(z.getMagnitude()) + ")";
+				+ df.format(z.getMagnitude()) + ")[" 
+				+ this.getMagnitude() + "]";
+	}
+
+	public void transform(CartesianTransform transform) {
+		CartesianVector v = transform.scale(this);
+		this.x.setMagnitude(v.x.getMagnitude());
+		this.y.setMagnitude(v.y.getMagnitude());
+		this.z.setMagnitude(v.z.getMagnitude());
 	}
 }

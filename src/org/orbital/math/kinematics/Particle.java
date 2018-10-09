@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.orbital.math.vector.CartesianPoint;
+import org.orbital.math.vector.CartesianTransform;
 import org.orbital.math.vector.CartesianVector;
 import org.orbital.math.vector.LagrangianVector;
 
@@ -333,4 +334,17 @@ public class Particle {
 				Math.pow(particle.getR().y.getMagnitude() - this.getR().y.getMagnitude(), 2.0) + 
 				Math.pow(particle.getR().z.getMagnitude() - this.getR().z.getMagnitude(), 2.0));
 	}
+	
+	public void transform(CartesianTransform transform) {
+		this.r.transform(transform);
+		this.v.transform(transform);
+	}
+
+	
+	public Particle getNullClone() {
+		return new Particle(this.label + "_Null", this.m, 
+			CartesianVector.NULL_VECTOR, CartesianVector.NULL_VECTOR, 
+			CartesianVector.NULL_VECTOR, 0.0, 1.0e9);
+	}
+
 }

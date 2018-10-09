@@ -1,7 +1,7 @@
 package org.orbital.impulse;
 
-import org.orbital.orbit.HohmannTransfer;
 import org.orbital.orbit.Orbit;
+import org.orbital.orbit.transfer.HohmannTransfer;
 
 public class PhasingManeuver {
 	private double time;

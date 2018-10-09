@@ -39,6 +39,10 @@ public class LagrangianVector {
 		this.fPrime = new Vector(F_PRIME_LABEL, fPrimeMag);
 		this.gPrime = new Vector(G_PRIME_LABEL, gPrimeMag);
 	}
+	
+	public static double dtFromUniversalAnomaly(Orbit o, double ua) {
+		return calculateUniversalAnomaly();
+	}
 
 	/**
 	 * @return the g
